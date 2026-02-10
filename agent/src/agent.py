@@ -17,6 +17,7 @@ from typing import Any, Callable, Dict
 from ag_ui_agentspec.agent import AgentSpecAgent
 
 from agentspec_agent import get_weather, with_agentspec_agent_json
+from a2ui_agentspec_agent import a2ui_chat_json
 
 
 def get_tool_registry() -> Dict[str, Callable[..., Any]]:
@@ -32,4 +33,11 @@ def build_agentspec_agent(runtime: str = "langgraph") -> AgentSpecAgent:
         agent_spec_config=with_agentspec_agent_json,
         runtime=runtime,
         tool_registry=get_tool_registry(),
+    )
+
+
+def build_a2ui_chat_agent(runtime: str = "langgraph") -> AgentSpecAgent:
+    return AgentSpecAgent(
+        agent_spec_config=a2ui_chat_json,
+        runtime=runtime
     )

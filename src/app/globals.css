@@ -1,4 +1,12 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
 
 :root {
   --background: #ffffff;
@@ -12,13 +20,8 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-body,
-html {
-  height: 100%;
+@layer base {
+  body {
+    @apply min-h-screen bg-background text-foreground font-sans antialiased;
+  }
 }
