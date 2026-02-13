@@ -115,6 +115,34 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Troubleshooting
 
+### A2UI surfaces clipped (temporary workaround)
+
+If A2UI cards (e.g. those with bottom action buttons) get clipped in the chat UI, we keep a temporary patch under:
+
+- `src/app/patches/@copilotkit/a2ui-renderer/dist/A2UIMessageRenderer.js`
+
+To apply it locally (this edits `node_modules` and will be overwritten by reinstalling dependencies):
+
+```bash
+pnpm patch:ui
+```
+
+After copying, restart `pnpm dev`.
+
+### Custom message key warning (temporary workaround)
+
+If you see React warnings about duplicate keys related to custom message rendering (keys like ``${message.id}-custom-before`` / ``${message.id}-custom-after``), we keep a temporary patch under:
+
+- `src/app/patches/@copilotkitnext/react/dist/index.mjs`
+
+To apply it locally (this edits `node_modules` and will be overwritten by reinstalling dependencies):
+
+```bash
+pnpm patch:ui
+```
+
+After copying, restart `pnpm dev`.
+
 ### Agent Connection Issues
 If you see "I'm having trouble connecting to my tools", make sure:
 1. The Agent Spec backend is running on port 8000

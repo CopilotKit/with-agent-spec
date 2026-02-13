@@ -1,116 +1,76 @@
 "use client";
 
-import { ProverbsCard } from "@/components/proverbs";
-import { WeatherCard } from "@/components/weather";
-import { MoonCard } from "@/components/moon";
-import { AgentState } from "@/lib/types";
-import {
-  useCoAgent,
-  useDefaultTool,
-  useFrontendTool,
-  useHumanInTheLoop,
-  useRenderToolCall,
-} from "@copilotkit/react-core";
-import { CopilotKitCSSProperties, CopilotSidebar } from "@copilotkit/react-ui";
-import { useState } from "react";
+import "@copilotkit/react-core/v2/styles.css";
+import { CopilotChat, CopilotKitProvider, useFrontendTool, ToolCallStatus } from "@copilotkit/react-core/v2";
+import { createA2UIMessageRenderer } from "@copilotkit/a2ui-renderer";
+import { z } from "zod";
+import { theme } from "./theme";
 
-export default function CopilotKitPage() {
-  const [themeColor, setThemeColor] = useState("#6366f1");
+// Disable static optimization for this page
+export const dynamic = "force-dynamic";
 
-  // 🪁 Frontend Actions: https://docs.copilotkit.ai/pydantic-ai/frontend-actions
-  useFrontendTool({
-    name: "setThemeColor",
-    description: "Change the theme color of the chat. Can be anything that the CSS background attribute accepts. Regular colors, linear of radial gradients etc.",
-    parameters: [
-      {
-        name: "themeColor",
-        description: "The theme color to set. Make sure to pick nice colors.",
-        required: true,
-      },
-    ],
-    handler({ themeColor }) {
-      setThemeColor(themeColor);
-    },
-  });
+const A2UIMessageRenderer = createA2UIMessageRenderer({ theme });
+const activityRenderers = [A2UIMessageRenderer];
+
+function A2UILoadingIndicator({
+  status,
+}: {
+  status: ToolCallStatus;
+}) {
+  if (status === ToolCallStatus.Complete) {
+    return null;
+  }
 
   return (
-    <main
-      style={
-        { "--copilot-kit-primary-color": themeColor } as CopilotKitCSSProperties
-      }
-    >
-      <CopilotSidebar
-        disableSystemMessage={true}
-        clickOutsideToClose={false}
-        labels={{
-          title: "Popup Assistant",
-          initial: "👋 Hi, there! You're chatting with an agent.",
-        }}
-        suggestions={[
-          {
-            title: "Generative UI",
-            message: "Get the weather in San Francisco.",
-          },
-          {
-            title: "Frontend Tools",
-            message: "Set the theme to green.",
-          },
-          {
-            title: "Human In the Loop",
-            message: "Please go to the moon.",
-          },
-        ]}
+    <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-md text-gray-500 text-sm mb-3">
+      <svg
+        className="w-4 h-4 animate-spin"
+        fill="none"
+        viewBox="0 0 24 24"
       >
-        <YourMainContent themeColor={themeColor} />
-      </CopilotSidebar>
-    </main>
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        />
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        />
+      </svg>
+      <span>Building interface...</span>
+    </div>
   );
 }
 
-function YourMainContent({ themeColor }: { themeColor: string }) {
-  // 🪁 Shared State: https://docs.copilotkit.ai/pydantic-ai/shared-state
-  const { state, setState } = useCoAgent<AgentState>({
-    name: "my_agent",
-    initialState: {
-      proverbs: [
-        "CopilotKit may be new, but its the best thing since sliced bread.",
-      ],
-    },
-  });
-
-  //🪁 Generative UI: https://docs.copilotkit.ai/pydantic-ai/generative-ui
-  useRenderToolCall(
+function Chat() {
+  useFrontendTool(
     {
-      name: "get_weather",
-      description: "Get the weather for a given location.",
-      parameters: [{ name: "location", type: "string", required: true }],
-      render: ({ args, result }) => {
-        return <WeatherCard location={args.location} themeColor={themeColor} />;
-      },
+      name: "send_a2ui_json_to_client",
+      description: "Sends A2UI JSON to the client to render rich UI",
+      parameters: z.object({
+        a2ui_json: z.string(),
+      }) as any,
+      render: ({ status }) => <A2UILoadingIndicator status={status} />,
     },
-    [themeColor],
+    []
   );
 
-  // 🪁 Human In the Loop: https://docs.copilotkit.ai/pydantic-ai/human-in-the-loop
-  useHumanInTheLoop(
-    {
-      name: "go_to_moon",
-      description: "Go to the moon on request.",
-      render: ({ respond, status }) => {
-        return (
-          <MoonCard themeColor={themeColor} status={status} respond={respond} />
-        );
-      },
-    },
-    [themeColor],
-  );
+  return <CopilotChat className="flex-1 min-h-0 overflow-hidden" agentId="my_a2ui_agent" />;
+}
 
+export default function Page() {
   return (
-    <div
-      style={{ backgroundColor: themeColor }}
-      className="h-screen flex justify-center items-center flex-col transition-colors duration-300"
-    >
-      <ProverbsCard state={state} setState={setState} />
-    </div>
+    <CopilotKitProvider runtimeUrl="/api/copilotkit" showDevConsole="auto" renderActivityMessages={activityRenderers}>
+      <div
+        className="a2ui-chat-container flex h-full min-h-0 flex-col overflow-hidden"
+      >
+        <Chat />
+      </div>
+    </CopilotKitProvider>
   );
 }
