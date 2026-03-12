@@ -100,7 +100,7 @@ export function CalendarView({ date, dayName, events }: CalendarViewProps) {
   const pendingCount = guests.filter((g) => g.status === "pending" || g.status === "maybe").length;
 
   return (
-    <div className="max-w-2xl w-full rounded-xl bg-[var(--surface-primary)] border border-[var(--border-card)] overflow-hidden my-3" style={{ boxShadow: 'var(--shadow-card)' }}>
+    <div className="max-w-2xl w-full bg-white dark:bg-transparent border border-transparent dark:border-white/[0.06] rounded-xl shadow-md dark:shadow-none overflow-hidden my-3">
       {/* Header */}
       <div className="px-5 py-3.5 border-b border-[var(--border-default)] flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -267,7 +267,7 @@ export function CalendarView({ date, dayName, events }: CalendarViewProps) {
 
 export function CalendarLoadingState() {
   return (
-    <div className="max-w-2xl w-full rounded-xl bg-[var(--surface-primary)] border border-[var(--border-card)] overflow-hidden my-3 animate-pulse" style={{ boxShadow: 'var(--shadow-card)' }}>
+    <div className="max-w-2xl w-full bg-white dark:bg-transparent border border-transparent dark:border-white/[0.06] rounded-xl shadow-md dark:shadow-none overflow-hidden my-3 animate-pulse">
       <div className="px-5 py-3.5 border-b border-[var(--border-default)] flex items-center gap-2">
         <div className="w-5 h-5 bg-[var(--surface-quaternary)] rounded" />
         <div className="h-4 w-20 bg-[var(--surface-quaternary)] rounded" />

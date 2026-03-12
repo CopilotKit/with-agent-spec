@@ -2,7 +2,19 @@
 
 This is a starter template for building AI agents using Agent Spec and CopilotKit. It provides a modern Next.js application wired to a FastAPI backend that serves an Agent Spec agent with A2UI-powered frontend tool rendering (calendar, inbox, email compose, daily brief dashboard).
 
-![Demo](demo.gif)
+<div align="center">
+
+https://github.com/user-attachments/assets/c0223e5d-aa92-49af-a1f9-115d28bae170
+
+</div>
+
+## Architecture
+
+| Layer | Role |
+|-------|------|
+| **[Agent Spec](https://agentspec.org)** | Portable, declarative agent definition — system prompt, server/client tools, and LLM configuration in one serializable spec. Runs on any compatible runtime (LangGraph, WayFlow). |
+| **[AG-UI Protocol](https://github.com/ag-ui-protocol/ag-ui)** | Streaming event protocol between the agent backend and CopilotKit frontend. Carries text tokens, tool calls, and state updates over a single connection. |
+| **[A2UI](https://docs.copilotkit.ai/guides/generative-ui)** | Generative UI framework — agents emit declarative component trees (cards, rows, modals, etc.) that the frontend renders as native interactive widgets inside the chat. |
 
 ## Prerequisites
 

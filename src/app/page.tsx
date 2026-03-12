@@ -7,10 +7,12 @@ import {
   ToolCallStatus,
   useFrontendTool,
   useConfigureSuggestions,
+  useAgent,
+  useCopilotKit,
 } from "@copilotkit/react-core/v2";
 import { createA2UIMessageRenderer, A2UIViewer } from "@copilotkit/a2ui-renderer";
 import { z } from "zod";
-import { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef, type ReactNode } from "react";
 
 import { withA2UIActivityMessage } from "@/components/a2ui-activity-wrapper";
 import { theme } from "./theme";
@@ -20,6 +22,8 @@ import { InboxView, InboxLoadingState } from "@/components/inbox-view";
 import type { Email } from "@/components/inbox-view";
 import { EmailComposeView, EmailComposeLoadingState } from "@/components/email-compose-view";
 import type { EmailComposeData } from "@/components/email-compose-view";
+import { CTABanner } from "@/components/cta-banner";
+import { ExplainerTitle, ExplainerCards } from "@/components/explainer-section";
 
 // Disable static optimization for this page
 export const dynamic = "force-dynamic";
@@ -87,6 +91,13 @@ function deduplicateMessages(
 
   if (dominated.size === 0) return elements;
   return elements.filter((_, i) => !dominated.has(i));
+}
+
+function MessageTracker({ count, onChange }: { count: number; onChange: (v: boolean) => void }): ReactNode {
+  useEffect(() => {
+    onChange(count > 0);
+  }, [count, onChange]);
+  return null;
 }
 
 function parseEmailList(raw: string): Email[] {
@@ -439,15 +450,37 @@ function Chat({
     [isCanvasMode, onCanvasUpdate, onShowChat]
   );
 
-  useConfigureSuggestions({
-    suggestions: [
-      { title: "Show inbox", message: "Check my inbox" },
-      { title: "Show calendar", message: "Show me my schedule for today" },
-      { title: "Write brief", message: "Create my daily brief" },
-    ],
-    available: "always",
+  const suggestions = useMemo(() => [
+    { title: "Show inbox", message: "Check my inbox" },
+    { title: "Show calendar", message: "Show me my schedule for today" },
+    { title: "Write brief", message: "Create my daily brief" },
+  ], []);
+
+  useConfigureSuggestions({ suggestions, available: "always" }, []);
+
+  const { agent } = useAgent({ agentId: "my_a2ui_agent" });
+  const { copilotkit } = useCopilotKit();
+
+  const agentRef = useRef(agent);
+  agentRef.current = agent;
+  const copilotkitRef = useRef(copilotkit);
+  copilotkitRef.current = copilotkit;
+
+  const submitSuggestion = useCallback(async (message: string) => {
+    const a = agentRef.current;
+    a.addMessage({
+      id: crypto.randomUUID(),
+      role: "user",
+      content: message,
+    });
+    try {
+      await copilotkitRef.current.runAgent({ agent: a });
+    } catch (error) {
+      console.error("submitSuggestion: runAgent failed", error);
+    }
   }, []);
 
+  const [hasMessages, setHasMessages] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [sentinelEl, setSentinelEl] = useState<HTMLDivElement | null>(null);
   const sentinelRef = useCallback((node: HTMLDivElement | null) => {
@@ -472,15 +505,18 @@ function Chat({
     <CopilotChat
       className="flex-1 min-h-0 overflow-hidden"
       agentId="my_a2ui_agent"
+      welcomeScreen={false}
       labels={{
-        welcomeMessageText: "How can I help you today?",
+        welcomeMessageText: "",
         chatInputPlaceholder: isCanvasMode
           ? "Type a message..."
           : "Ask about your schedule, inbox, or compose an email...",
       }}
+      input={{ showDisclaimer: false, positioning: "static" }}
       messageView={{
         children: ({ messages, messageElements, interruptElement, isRunning }) => (
           <>
+            <MessageTracker count={messages.length} onChange={setHasMessages} />
             {deduplicateMessages(messages, messageElements)}
             {interruptElement}
             {isRunning && (
@@ -497,12 +533,37 @@ function Chat({
       }}
     >
       {({ scrollView, input, suggestionView }) => (
-        <div className="copilot-custom-chat">
-          {scrollView}
-          <div className="chips-above-input" style={{ opacity: isAtBottom ? 1 : 0, pointerEvents: isAtBottom ? undefined : "none", transition: "opacity 0.2s ease" }}>
-            {suggestionView}
+        <div className={`copilot-custom-chat ${hasMessages ? "copilot-custom-chat--has-messages" : ""}`}>
+          <div style={hasMessages
+            ? { flex: '1 1 0%', minHeight: 0, display: 'flex', flexDirection: 'column' }
+            : { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, visibility: 'hidden', pointerEvents: 'none' }
+          }>
+            {scrollView}
           </div>
+          {!isCanvasMode && !hasMessages && <ExplainerTitle />}
           {input}
+          {!isCanvasMode && !hasMessages && <ExplainerCards />}
+          {!isCanvasMode && !hasMessages && (
+            <div className="explainer-prompts">
+              <p className="explainer-prompts-label">Try these prompts:</p>
+              <div className="suggestion-chips">
+                {suggestions.map((s) => (
+                  <button
+                    key={s.title}
+                    className="suggestion-chip"
+                    onClick={() => submitSuggestion(s.message)}
+                  >
+                    {s.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {(isCanvasMode || hasMessages) && (
+            <div className="chips-above-input" style={{ opacity: isAtBottom ? 1 : 0, pointerEvents: isAtBottom ? undefined : "none", transition: "opacity 0.2s ease" }}>
+              {suggestionView}
+            </div>
+          )}
         </div>
       )}
     </CopilotChat>
@@ -542,15 +603,31 @@ export default function Page() {
       showDevConsole="auto"
       renderActivityMessages={activityRenderers}
     >
-      <div className={`a2ui-chat-container flex h-full min-h-0 overflow-hidden ${isCanvasMode ? "layout-split" : "layout-chat"}`}>
-        {isCanvasMode && canvas.content && (
-          <Canvas content={canvas.content} onClose={handleShowChat} />
-        )}
-        <div
-          className={`chat-panel flex flex-col min-h-0 overflow-hidden ${isCanvasMode ? "chat-sidebar" : "flex-1"}`}
-          {...(isCanvasMode ? { "data-sidebar-chat": true } : {})}
-        >
-          <Chat isCanvasMode={isCanvasMode} hasCanvasContent={canvas.content !== null} onCanvasUpdate={handleCanvasUpdate} onShowChat={handleShowChat} onShowCanvas={handleShowCanvas} />
+      {/* Animated background blobs */}
+      <div className="abstract-bg">
+        <div className="blob-3" />
+      </div>
+
+      {/* Main content above background */}
+      <div className={`relative z-10 h-full min-h-0 overflow-hidden ${isCanvasMode ? "flex flex-col" : "brand-shell"}`}>
+        {/* Glass container */}
+        <div className={`brand-glass-container flex flex-col min-h-0 overflow-hidden ${isCanvasMode ? "flex-1 brand-glass-container--split" : ""}`}>
+          {/* CTA Banner */}
+          <CTABanner />
+
+          {/* App layout */}
+          <div className={`a2ui-chat-container flex flex-1 min-h-0 overflow-hidden ${isCanvasMode ? "layout-split" : "layout-chat"}`}>
+            {isCanvasMode && canvas.content && (
+              <Canvas content={canvas.content} onClose={handleShowChat} />
+            )}
+            <div
+              className={`chat-panel flex flex-col min-h-0 overflow-hidden ${isCanvasMode ? "chat-sidebar" : "flex-1"}`}
+              {...(isCanvasMode ? { "data-sidebar-chat": true } : {})}
+            >
+              <Chat isCanvasMode={isCanvasMode} hasCanvasContent={canvas.content !== null} onCanvasUpdate={handleCanvasUpdate} onShowChat={handleShowChat} onShowCanvas={handleShowCanvas} />
+            </div>
+          </div>
+
         </div>
       </div>
     </CopilotKitProvider>

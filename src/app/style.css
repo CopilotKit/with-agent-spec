@@ -19,9 +19,9 @@
   --border-light: #f3f4f6;
   --border-card: transparent;
 
-  --accent-indigo: #6366f1;
-  --accent-blue: #3b82f6;
-  --accent-emerald: #10b981;
+  --accent-indigo: #9599CC;
+  --accent-blue: #BEC2FF;
+  --accent-emerald: #85E0CE;
 
   --backdrop: rgba(0, 0, 0, 0.4);
 
@@ -31,63 +31,98 @@
   --shadow-compact-hover: 0 2px 6px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
   --shadow-canvas-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.06);
   --shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  --copilot-kit-primary-color: var(--color-lilac-dark);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface-primary: rgba(0, 0, 0, 0.35);
-    --surface-secondary: #111;
-    --surface-tertiary: rgba(255, 255, 255, 0.1);
-    --surface-quaternary: rgba(255, 255, 255, 0.08);
+    --surface-primary: rgba(255, 255, 255, 0.04);
+    --surface-secondary: rgba(255, 255, 255, 0.02);
+    --surface-tertiary: rgba(255, 255, 255, 0.06);
+    --surface-quaternary: rgba(255, 255, 255, 0.05);
     --surface-btn: rgba(255, 255, 255, 0.06);
     --surface-btn-hover: rgba(255, 255, 255, 0.1);
-    --surface-canvas-header: rgba(0, 0, 0, 0.3);
-    --surface-dialog: #1f2937;
+    --surface-canvas-header: rgba(10, 10, 10, 1);
+    --surface-dialog: rgba(30, 30, 50, 0.9);
 
     --text-primary: #e5e7eb;
     --text-secondary: #9ca3af;
     --text-tertiary: #6b7280;
 
-    --border-default: rgba(255, 255, 255, 0.1);
-    --border-hover: rgba(255, 255, 255, 0.16);
-    --border-subtle: rgba(255, 255, 255, 0.1);
-    --border-light: rgba(255, 255, 255, 0.08);
-    --border-card: rgba(255, 255, 255, 0.1);
+    --border-default: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.14);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-light: rgba(255, 255, 255, 0.05);
+    --border-card: rgba(255, 255, 255, 0.06);
 
     --backdrop: rgba(0, 0, 0, 0.6);
 
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-card-hover: 0 2px 6px rgba(0, 0, 0, 0.4);
-    --shadow-compact: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-compact-hover: 0 2px 6px rgba(0, 0, 0, 0.4);
-    --shadow-canvas-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-card: none;
+    --shadow-card-hover: none;
+    --shadow-compact: none;
+    --shadow-compact-hover: none;
+    --shadow-canvas-card: none;
     --shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 
   }
+}
+
+/* ===================================================================
+   CopilotKit Glass Integration
+   Tested with: @copilotkit/react-core 0.0.0-mme-ag-ui-0-0-46-20260227141603
+
+   Relied-upon selectors (update if CopilotKit DOM changes):
+     [data-copilotkit]                       — root theme scope
+     [data-testid="copilot-user-message"]    — user message bubble
+     [data-testid="copilot-assistant-message"] — assistant message bubble
+     [data-testid="copilot-welcome-screen"]  — welcome screen wrapper
+     [data-testid="copilot-welcome-message"] — welcome text
+     [data-testid="copilot-suggestions"]     — suggestion chip container
+     [data-testid="copilot-scroll-to-bottom"] — scroll button
+     [data-testid="copilot-disclaimer"]      — disclaimer element
+     [data-testid="copilot-chat-input"]      — input area
+     [class*="cpk:bg-muted"]                 — muted background utility
+     [class*="bg-background"]                — background utility
+     .copilotKitMessages                     — v1 message container
+
+   These overrides use !important to force transparency inside the
+   glassmorphism shell. Verify after any CopilotKit version bump.
+   =================================================================== */
+
+/* CopilotKit v2 light mode — transparent backgrounds for glass container */
+[data-copilotkit][data-copilotkit] {
+  --background: transparent;
+  --card: transparent;
+  --popover: oklch(98% 0 0);
+  --secondary: oklch(96% 0 0 / 0.6);
+  --muted: oklch(96% 0 0 / 0.5);
+  --border: oklch(90% 0 0 / 0.5);
+  --input: oklch(90% 0 0 / 0.5);
 }
 
 /* CopilotKit v2 dark mode — media-query override so we don't need .dark class
    (avoids Next.js hydration mismatch from toggling className on <html>). */
 @media (prefers-color-scheme: dark) {
   [data-copilotkit][data-copilotkit] {
-    --background: oklch(14.5% 0 0);
+    --background: transparent;
     --foreground: oklch(98.5% 0 0);
-    --card: oklch(14.5% 0 0);
+    --card: transparent;
     --card-foreground: oklch(98.5% 0 0);
     --popover: oklch(14.5% 0 0);
     --popover-foreground: oklch(98.5% 0 0);
     --primary: oklch(98.5% 0 0);
     --primary-foreground: oklch(20.5% 0 0);
-    --secondary: oklch(26.9% 0 0);
+    --secondary: oklch(26.9% 0 0 / 0.6);
     --secondary-foreground: oklch(98.5% 0 0);
-    --muted: oklch(26.9% 0 0);
+    --muted: oklch(26.9% 0 0 / 0.15);
     --muted-foreground: oklch(70.8% 0 0);
     --accent: oklch(26.9% 0 0);
     --accent-foreground: oklch(98.5% 0 0);
     --destructive: oklch(39.6% .141 25.723);
     --destructive-foreground: oklch(63.7% .237 25.331);
-    --border: oklch(26.9% 0 0);
-    --input: oklch(26.9% 0 0);
+    --border: oklch(26.9% 0 0 / 0.5);
+    --input: oklch(26.9% 0 0 / 0.5);
     --ring: oklch(55.6% 0 0);
     --sidebar: oklch(20.5% 0 0);
     --sidebar-foreground: oklch(98.5% 0 0);
@@ -101,11 +136,11 @@
 
   /* CopilotKit v1 fallback variables */
   :root {
-    --copilot-kit-primary-color: rgb(255, 255, 255);
+    --copilot-kit-primary-color: var(--color-lilac);
     --copilot-kit-contrast-color: rgb(28, 28, 28);
-    --copilot-kit-background-color: rgb(17, 17, 17);
-    --copilot-kit-input-background-color: #2c2c2c;
-    --copilot-kit-secondary-color: rgb(28, 28, 28);
+    --copilot-kit-background-color: transparent;
+    --copilot-kit-input-background-color: transparent;
+    --copilot-kit-secondary-color: transparent;
     --copilot-kit-secondary-contrast-color: rgb(255, 255, 255);
     --copilot-kit-separator-color: rgb(45, 45, 45);
     --copilot-kit-muted-color: rgb(45, 45, 45);
@@ -120,12 +155,135 @@
   }
 }
 
-/* Fix for messages being hidden behind the absolutely-positioned input */
-.a2ui-chat-container [class*="overflow-y-scroll"] {
-  padding-bottom: 120px !important;
+/* === Glass-aware variable overrides === */
+
+/* The :root dark-mode values above are already glass-friendly (transparent
+   surfaces, no box-shadows). The scoped override below is a safety net in case
+   anything re-declares opaquer values higher in the cascade. */
+@media (prefers-color-scheme: dark) {
+  .brand-glass-container {
+    --surface-primary: rgba(255, 255, 255, 0.04);
+    --surface-secondary: rgba(255, 255, 255, 0.02);
+    --border-card: rgba(255, 255, 255, 0.06);
+    --shadow-card: none;
+    --shadow-card-hover: none;
+    --shadow-compact: none;
+  }
 }
 
-/* === Custom chat layout: chips above input pill === */
+/* CopilotKit v2 user message bubble — uses cpk:bg-muted */
+@media (prefers-color-scheme: dark) {
+  .brand-glass-container [data-copilotkit][data-copilotkit] {
+    --muted: oklch(26.9% 0 0 / 0.25);
+  }
+
+  /* Blend chat messages into the glass shell (remove hard dark edges). */
+  .brand-glass-container [data-testid="copilot-user-message"] [class*="cpk:bg-muted"],
+  .brand-glass-container [data-testid="copilot-user-message"] [class*="bg-muted"] {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .brand-glass-container [data-testid="copilot-assistant-message"],
+  .brand-glass-container [data-testid="copilot-assistant-message"] [class*="cpk:prose"],
+  .brand-glass-container [data-testid="copilot-assistant-message"] [class*="prose"] {
+    background: transparent !important;
+  }
+
+  .brand-glass-container [data-testid="copilot-user-message"],
+  .brand-glass-container [data-testid="copilot-assistant-message"] {
+    color: rgba(245, 245, 245, 0.95);
+  }
+
+  .brand-glass-container [data-testid="copilot-assistant-message"] code {
+    color: rgba(220, 220, 255, 0.9);
+  }
+
+  .brand-glass-container [data-testid="copilot-assistant-message"] a {
+    color: var(--color-lilac-light);
+  }
+}
+
+/* CopilotKit v1 class overrides — make containers transparent inside glass */
+.brand-glass-container .copilotKitMessages {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+/* A2UI activity messages — soften within glass */
+.brand-glass-container .a2ui-activity-message {
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .brand-glass-container .a2ui-activity-message {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: none !important;
+  }
+  .brand-glass-container .a2ui-activity-header {
+    border-bottom-color: rgba(255, 255, 255, 0.04) !important;
+  }
+  .brand-glass-container .a2ui-activity-toggle {
+    border-color: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+
+/* CopilotKit input area — glass treatment */
+.brand-glass-container [data-copilotkit] [class*="bg-background"] {
+  background: transparent !important;
+}
+
+/* CopilotKit input wrapper — match content area background */
+.copilot-custom-chat--has-messages {
+  background: #fff;
+}
+
+.copilot-custom-chat > [data-copilotkit] {
+  padding: 8px 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .copilot-custom-chat--has-messages {
+    background: rgba(10, 10, 10, 1);
+  }
+}
+
+/* CopilotKit Content wrapper — opaque dark background for scroll container */
+@media (prefers-color-scheme: dark) {
+  .copilot-custom-chat [data-copilotkit] > div {
+    background-color: rgba(10, 10, 10, 1);
+  }
+}
+
+/* Breathing room at the bottom of the message scroll area */
+.a2ui-chat-container [class*="overflow-y-scroll"] {
+  padding-bottom: 16px !important;
+  background-color: var(--background);
+  background-image: none;
+  background-clip: unset;
+  -webkit-background-clip: unset;
+}
+
+.a2ui-chat-container {
+  background-clip: unset;
+  -webkit-background-clip: unset;
+}
+
+@media (prefers-color-scheme: dark) {
+  .a2ui-chat-container,
+  .a2ui-chat-container [class*="overflow-y-scroll"] {
+    color: rgba(250, 250, 250, 1);
+  }
+}
+
+/* === Custom chat layout === */
 
 /* The children render prop layout container */
 .copilot-custom-chat {
@@ -133,15 +291,25 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
-/* Hide the duplicate suggestions inside the scroll area (they're also rendered
-   separately in .chips-above-input via the suggestionView render prop) */
-.copilot-custom-chat > :first-child [data-testid="copilot-suggestions"] {
+/* When messages exist, switch to top-aligned scrollable layout */
+.copilot-custom-chat--has-messages {
+  justify-content: flex-start;
+}
+
+.copilot-custom-chat--has-messages > :first-child {
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+/* Hide duplicate suggestion chips rendered by CopilotKit inside the scroll area */
+.copilot-custom-chat--has-messages > :first-child [data-testid="copilot-suggestions"] {
   display: none !important;
 }
 
-/* Floating suggestion chips positioned just above the input pill */
+/* Floating suggestion chips — only used in canvas/sidebar mode */
 .chips-above-input {
   position: absolute;
   bottom: 110px;
@@ -164,20 +332,23 @@
   display: none !important;
 }
 
-/* === Suggestion chips: welcome screen reordering === */
+/* === Welcome screen overrides === */
 
-/* On the welcome screen (no messages), CopilotChatView renders its own layout.
-   Reorder children so chips appear above the input pill. */
-[data-testid="copilot-welcome-screen"] > div > div:nth-child(2) {
-  order: 3;
+[data-testid="copilot-welcome-screen"] {
+  background-color: var(--surface-secondary);
+  background-clip: unset;
+  -webkit-background-clip: unset;
 }
-[data-testid="copilot-welcome-screen"] > div > div:nth-child(3) {
-  order: 2;
-  width: 100%;
-  justify-content: center;
-  margin-top: 0;
-  margin-bottom: 12px;
-  padding-inline: 0;
+
+@media (prefers-color-scheme: dark) {
+  [data-testid="copilot-welcome-screen"] {
+    color: rgba(250, 250, 250, 1);
+  }
+}
+
+/* Hide the default welcome screen suggestion chips (we render our own below the cards) */
+[data-testid="copilot-welcome-screen"] [data-testid="copilot-suggestions"] {
+  display: none !important;
 }
 
 /* === Suggestion chips: shared styles === */
@@ -188,6 +359,11 @@
   overflow-x: auto !important;
   overflow-y: hidden !important;
   max-width: 100% !important;
+  background-image: radial-gradient(circle at 50% 50%, rgba(250, 250, 250, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-color: rgba(255, 255, 255, 0);
   padding-bottom: 2px; /* prevent clipping box-shadow on pills */
   justify-content: center;
   /* Hide scrollbar (still scrollable) */
@@ -200,9 +376,9 @@
 
 /* Use the system font for A2UI surfaces to match the rest of the UI. */
 .a2ui-chat-container .a2ui-surface {
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
-  --font-family-flex: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  --font-family-flex: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -233,7 +409,7 @@
 
 @keyframes a2ui-activity-flash {
   0% {
-    outline: 2px solid rgba(99, 102, 241, 0.5);
+    outline: 2px solid rgba(190, 194, 255, 0.5);
     outline-offset: 2px;
   }
   100% {
@@ -296,7 +472,7 @@
 }
 
 .a2ui-chat-container .a2ui-activity-toggle:focus-visible {
-  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline: 2px solid rgba(190, 194, 255, 0.5);
   outline-offset: 2px;
 }
 
@@ -422,6 +598,25 @@
 
 [data-sidebar-chat] [data-testid="copilot-chat-input"] > div > div:last-child {
   grid-row: 1 !important;
+}
+
+/* === Tool Result Card Surfaces ===
+   Direct values (not CSS variables) to avoid Turbopack dev-mode cascade issues
+   between globals.css (@import "tailwindcss") and style.css variable scopes. */
+
+.surface-card {
+  background: #fff;
+  border: 1px solid transparent;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+  border-radius: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .surface-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
+  }
 }
 
 /* === Compact Tool Cards (chat sidebar when content is in canvas) === */
@@ -633,6 +828,371 @@
 /* Surface — small top padding for breathing room */
 .canvas-a2ui .a2ui-surface {
   padding: 4px 0;
+}
+
+/* === Brand Shell & Glass Container === */
+
+/* In chat-only mode, pad the outer shell so the blobs show around the edges */
+.brand-shell {
+  display: flex;
+  align-items: stretch;
+  padding: 16px;
+  height: 100%;
+}
+
+/* The glass card that holds header + chat */
+.brand-glass-container {
+  background: var(--color-glass-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  flex: 1;
+  overflow: hidden;
+}
+
+/* In split/canvas mode, remove the rounded corners and margin */
+.brand-glass-container--split {
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .brand-shell {
+    padding: 8px;
+  }
+}
+
+/* === Branded Title Block (above input pill) === */
+
+.explainer-title-block {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 0 24px 20px;
+}
+
+.branded-header-title {
+  font-family: var(--font-family);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+  background: linear-gradient(135deg, var(--color-lilac-dark), var(--color-mint-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.branded-header-subtitle {
+  font-size: 15px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* === CTA Banner === */
+
+.cta-banner {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--color-border-glass);
+  background: linear-gradient(
+    135deg,
+    rgba(190, 194, 255, 0.08) 0%,
+    rgba(133, 224, 206, 0.06) 100%
+  );
+}
+
+.cta-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 20px;
+}
+
+.cta-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cta-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--color-lilac), var(--color-mint));
+  color: #fff;
+}
+
+.cta-headline {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.cta-subtext {
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.cta-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 180ms ease;
+  cursor: pointer;
+}
+
+.cta-btn--primary {
+  background: linear-gradient(135deg, var(--color-lilac-dark), var(--color-mint-dark));
+  color: #fff;
+  border: none;
+  box-shadow: 0 1px 4px rgba(149, 153, 204, 0.3);
+}
+
+.cta-btn--primary:hover {
+  box-shadow: 0 2px 10px rgba(149, 153, 204, 0.45);
+  transform: translateY(-1px);
+}
+
+.cta-btn--secondary {
+  background: var(--surface-btn);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+.cta-btn--secondary:hover {
+  background: var(--surface-btn-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.cta-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+  .cta-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 16px;
+  }
+
+  .cta-actions {
+    width: 100%;
+  }
+
+  .cta-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .cta-banner {
+    background: linear-gradient(
+      135deg,
+      rgba(190, 194, 255, 0.04) 0%,
+      rgba(133, 224, 206, 0.03) 100%
+    );
+  }
+
+  .cta-btn--primary {
+    box-shadow: 0 1px 4px rgba(149, 153, 204, 0.2);
+  }
+
+  .cta-btn--primary:hover {
+    box-shadow: 0 2px 10px rgba(149, 153, 204, 0.35);
+  }
+}
+
+/* === Explainer Section (below input pill) === */
+
+.explainer-section {
+  flex-shrink: 0;
+  padding: 24px 24px 16px;
+  text-align: center;
+}
+
+.explainer-headline {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin: 0 auto 20px;
+}
+
+.explainer-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.explainer-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: left;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.explainer-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-1px);
+}
+
+.explainer-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.explainer-card-icon--lilac {
+  background: rgba(190, 194, 255, 0.2);
+  color: var(--accent-indigo);
+}
+
+.explainer-card-icon--mixed {
+  background: linear-gradient(135deg, rgba(190, 194, 255, 0.15), rgba(133, 224, 206, 0.15));
+  color: var(--accent-indigo);
+}
+
+.explainer-card-icon--mint {
+  background: rgba(133, 224, 206, 0.2);
+  color: var(--accent-emerald);
+}
+
+.explainer-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.explainer-card-desc {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .explainer-cards {
+    grid-template-columns: 1fr;
+    max-width: 320px;
+  }
+
+  .explainer-section {
+    padding: 16px 16px 24px;
+  }
+}
+
+/* === Explainer Prompts (suggestion chips below cards) === */
+
+.explainer-prompts {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 20px 16px 24px;
+}
+
+.explainer-prompts-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  margin: 0 0 10px;
+}
+
+/* Custom suggestion chips in the welcome view */
+.suggestion-chips {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.suggestion-chip {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--color-border-glass);
+  border-radius: 20px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.suggestion-chip:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--color-lilac-dark);
+  color: var(--color-lilac-dark);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+/* Hide the default CopilotKit welcome message (replaced by branded title) */
+[data-testid="copilot-welcome-screen"] [data-testid="copilot-welcome-message"] {
+  display: none !important;
+}
+
+/* Hide the disclaimer fallback */
+[data-testid="copilot-disclaimer"] {
+  display: none !important;
+}
+
+/* === Glassmorphism Panel Overlays === */
+
+.layout-split .canvas-panel {
+  background: var(--color-glass-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.layout-split .chat-sidebar {
+  background: var(--color-glass-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 /* Responsive: stack on mobile */

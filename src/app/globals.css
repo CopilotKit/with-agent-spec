@@ -1,24 +1,253 @@
 @import "tailwindcss";
 
+/* === Brand Design Tokens === */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Existing compatibility */
+  --background: #F7F7F9;
+  --foreground: #010507;
+
+  /* CopilotKit Brand Colors */
+  --color-lilac: #BEC2FF;
+  --color-lilac-light: #D4D7FF;
+  --color-lilac-dark: #9599CC;
+  --color-mint: #85E0CE;
+  --color-mint-light: #A8E9DC;
+  --color-mint-dark: #1B936F;
+
+  /* Surfaces */
+  --color-surface: #DEDEE9;
+  --color-surface-light: #F7F7F9;
+  --color-container: #FFFFFF;
+
+  /* Text */
+  --color-text-primary: #010507;
+  --color-text-secondary: #57575B;
+  --color-text-tertiary: #8E8E93;
+
+  /* Borders */
+  --color-border: #DBDBE5;
+  --color-border-light: #EBEBF0;
+  --color-border-glass: rgba(255, 255, 255, 0.3);
+
+  /* Glassmorphism */
+  --color-glass: rgba(255, 255, 255, 0.7);
+  --color-glass-subtle: rgba(255, 255, 255, 0.5);
+  --color-glass-dark: rgba(255, 255, 255, 0.85);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --shadow-glow-lilac: 0 0 20px rgba(190, 194, 255, 0.3);
+  --shadow-glow-mint: 0 0 20px rgba(133, 224, 206, 0.3);
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+
+  /* Typography */
+  --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --color-surface: #1a1a2e;
+    --color-surface-light: #0f0f1a;
+    --color-container: #1a1a2e;
+
+    --color-text-primary: #e5e7eb;
+    --color-text-secondary: #9ca3af;
+    --color-text-tertiary: #6b7280;
+
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-border-light: rgba(255, 255, 255, 0.06);
+    --color-border-glass: rgba(255, 255, 255, 0.08);
+
+    --color-glass: rgba(20, 20, 40, 0.7);
+    --color-glass-subtle: rgba(20, 20, 40, 0.5);
+    --color-glass-dark: rgba(10, 10, 20, 0.85);
+
+    --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.3);
+    --shadow-glow-lilac: 0 0 20px rgba(190, 194, 255, 0.15);
+    --shadow-glow-mint: 0 0 20px rgba(133, 224, 206, 0.15);
+  }
+
+  /* CopilotKit user message bubble — make transparent in glass container */
+  [data-copilotkit] {
+    --muted: oklch(26.9% 0 0 / 0.08) !important;
   }
 }
 
+/* === Base Styles === */
+
 body {
+  font-family: var(--font-family);
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body,
 html {
   height: 100%;
+}
+
+/* === Animated Background === */
+
+.abstract-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  background: linear-gradient(135deg, var(--color-surface-light) 0%, var(--color-surface) 100%);
+}
+
+.abstract-bg::before,
+.abstract-bg::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+}
+
+.abstract-bg::before {
+  width: 600px;
+  height: 600px;
+  background: var(--color-lilac);
+  top: -200px;
+  right: -100px;
+  animation: blob1 25s ease-in-out infinite;
+}
+
+.abstract-bg::after {
+  width: 500px;
+  height: 500px;
+  background: var(--color-mint);
+  bottom: -150px;
+  left: -100px;
+  animation: blob2 30s ease-in-out infinite;
+}
+
+.blob-3 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, var(--color-lilac-light), var(--color-mint-light));
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: blob3 35s ease-in-out infinite;
+}
+
+@keyframes blob1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-30px, 50px) scale(1.1); }
+  50% { transform: translate(20px, -30px) scale(0.95); }
+  75% { transform: translate(40px, 20px) scale(1.05); }
+}
+
+@keyframes blob2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, -40px) scale(1.1); }
+  66% { transform: translate(-30px, 30px) scale(0.9); }
+}
+
+@keyframes blob3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  25% { transform: translate(-45%, -55%) scale(1.15); }
+  50% { transform: translate(-55%, -45%) scale(0.9); }
+  75% { transform: translate(-48%, -52%) scale(1.1); }
+}
+
+@media (max-width: 767px) {
+  .abstract-bg::before {
+    width: 350px;
+    height: 350px;
+    filter: blur(60px);
+  }
+  .abstract-bg::after {
+    width: 300px;
+    height: 300px;
+    filter: blur(60px);
+  }
+  .blob-3 {
+    width: 250px;
+    height: 250px;
+    filter: blur(70px);
+  }
+}
+
+/* === Glassmorphism Utilities === */
+
+.glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+}
+
+.glass-subtle {
+  background: var(--color-glass-subtle);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-lg);
+}
+
+.glass-card {
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  padding: var(--space-6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* === Gradient Utilities === */
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-lilac-dark), var(--color-mint-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.border-gradient {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--color-container), var(--color-container)) padding-box,
+              linear-gradient(135deg, var(--color-lilac), var(--color-mint)) border-box;
 }
