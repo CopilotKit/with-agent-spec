@@ -14,7 +14,7 @@ https://github.com/user-attachments/assets/c0223e5d-aa92-49af-a1f9-115d28bae170
 |-------|------|
 | **[Agent Spec](http://oracle.github.io/agent-spec)** | Portable, declarative agent definition — system prompt, server/client tools, and LLM configuration in one serializable spec. Runs on any compatible runtime (LangGraph, WayFlow). |
 | **[AG-UI Protocol](https://github.com/ag-ui-protocol/ag-ui)** | Streaming event protocol between the agent backend and CopilotKit frontend. Carries text tokens, tool calls, and state updates over a single connection. |
-| **[A2UI](https://docs.copilotkit.ai/guides/generative-ui)** | Generative UI framework — agents emit declarative component trees (cards, rows, modals, etc.) that the frontend renders as native interactive widgets inside the chat. |
+| **[A2UI](https://github.com/google/A2UI)** | Generative UI framework — agents emit declarative component trees (cards, rows, modals, etc.) that the frontend renders as native interactive widgets inside the chat. |
 
 ## Prerequisites
 
